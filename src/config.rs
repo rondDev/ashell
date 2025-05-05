@@ -94,12 +94,14 @@ impl Default for SystemModuleConfig {
 #[derive(Deserialize, Clone, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct ClockModuleConfig {
+    pub update_time: u64,
     pub format: String,
 }
 
 impl Default for ClockModuleConfig {
     fn default() -> Self {
         Self {
+            update_time: 5,
             format: "%a %d %b %R".to_string(),
         }
     }

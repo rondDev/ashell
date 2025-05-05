@@ -32,7 +32,7 @@ impl Clock {
 
 impl Module for Clock {
     type ViewData<'a> = &'a str;
-    type SubscriptionData<'a> = ();
+    type SubscriptionData<'a> = u64;
     fn view(
         &self,
         format: Self::ViewData<'_>,
@@ -40,9 +40,12 @@ impl Module for Clock {
         Some((text(self.date.format(format).to_string()).into(), None))
     }
 
-    fn subscription(&self, _: Self::SubscriptionData<'_>) -> Option<Subscription<app::Message>> {
+    fn subscription(
+        &self,
+        update_time: Self::SubscriptionData<'_>,
+    ) -> Option<Subscription<app::Message>> {
         Some(
-            every(Duration::from_secs(5))
+            every(Duration::from_secs(update_time))
                 .map(|_| Message::Update)
                 .map(app::Message::Clock),
         )
