@@ -19,6 +19,7 @@ pub mod keyboard_submap;
 pub mod media_player;
 pub mod privacy;
 pub mod settings;
+pub mod sway_nc;
 pub mod system_info;
 pub mod tray;
 pub mod updates;
@@ -247,6 +248,7 @@ impl App {
             ModuleName::Privacy => self.privacy.view(()),
             ModuleName::Settings => self.settings.view(()),
             ModuleName::MediaPlayer => self.media_player.view(&self.config.media_player),
+            ModuleName::SwayNc => self.swaync.view(()),
         }
     }
 
@@ -269,6 +271,7 @@ impl App {
             ModuleName::Privacy => self.privacy.subscription(()),
             ModuleName::Settings => self.settings.subscription(()),
             ModuleName::MediaPlayer => self.media_player.subscription(()),
+            ModuleName::SwayNc => self.swaync.subscription(()),
         }
     }
 }

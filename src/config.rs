@@ -350,6 +350,7 @@ pub enum ModuleName {
     Privacy,
     Settings,
     MediaPlayer,
+    SwayNc,
 }
 
 #[derive(Deserialize, Clone, Debug)]

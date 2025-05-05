@@ -15,6 +15,7 @@ use crate::{
         media_player::MediaPlayer,
         privacy::Privacy,
         settings::{Settings, brightness::BrightnessMessage},
+        sway_nc::SwayNc,
         system_info::SystemInfo,
         tray::{TrayMessage, TrayModule},
         updates::Updates,
@@ -59,6 +60,7 @@ pub struct App {
     pub privacy: Privacy,
     pub settings: Settings,
     pub media_player: MediaPlayer,
+    pub swaync: SwayNc,
 }
 
 #[derive(Debug, Clone)]
@@ -69,9 +71,11 @@ pub enum Message {
     CloseMenu(Id),
     OpenLauncher,
     OpenClipboard,
+    OpenSwayNc,
     Updates(modules::updates::Message),
     Workspaces(modules::workspaces::Message),
     WindowTitle(modules::window_title::Message),
+    SubscribeUpdate(modules::sway_nc::Message),
     SystemInfo(modules::system_info::Message),
     KeyboardLayout(modules::keyboard_layout::Message),
     KeyboardSubmap(modules::keyboard_submap::Message),
@@ -106,6 +110,7 @@ impl App {
                     privacy: Privacy::default(),
                     settings: Settings::default(),
                     media_player: MediaPlayer::default(),
+                    swaync: SwayNc::default(),
                 },
                 task,
             )
@@ -211,6 +216,10 @@ impl App {
                 }
                 Task::none()
             }
+            Message::OpenSwayNc => {
+                utils::launcher::execute_command("swaync-client -t -sw".to_string());
+                Task::none()
+            }
             Message::Workspaces(msg) => {
                 self.workspaces.update(msg);
 
@@ -279,6 +288,7 @@ impl App {
                 _ => Task::none(),
             },
             Message::MediaPlayer(msg) => self.media_player.update(msg),
+            Message::SubscribeUpdate(message) => self.swaync.update(message),
         }
     }
 
