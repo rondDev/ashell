@@ -3,6 +3,8 @@ use hyprland::event_listener::AsyncEventListener;
 use iced::Task;
 use iced::{Element, Subscription, stream::channel, widget::text};
 use log::{debug, error};
+use serde::Deserialize;
+use serde_json::from_str;
 use std::any::TypeId;
 use std::io::BufRead;
 use std::io::BufReader;
@@ -19,6 +21,14 @@ pub struct SwayNc {
 #[derive(Debug, Clone)]
 pub enum Message {
     SubscribeUpdate { count: i32 },
+}
+
+#[derive(Deserialize)]
+struct SwayNcOutput {
+    count: i32,
+    dnd: bool,
+    visible: bool,
+    inhibited: bool,
 }
 
 impl SwayNc {
@@ -64,11 +74,14 @@ impl Module for SwayNc {
 
                     reader
                         .lines()
-                        .filter_map(|line| {
-                            let i = str::parse::<i32>(
-                                serde_json::from_str(line.expect("Oops").as_str()).unwrap(),
-                            );
-                            Some(i)
+                        .map(|line| {
+                            Some(
+                                from_str::<SwayNcOutput>(
+                                    line.expect("SwayNc output failed to parse").as_str(),
+                                )
+                                .unwrap()
+                                .count,
+                            )
                         })
                         .for_each(|line| {
                             let i: i32 = line.unwrap_or(0);
@@ -83,7 +96,7 @@ impl Module for SwayNc {
                     let res = event_listener.start_listener_async().await;
 
                     if let Err(e) = res {
-                        error!("restarting active window listener due to error: {:?}", e);
+                        error!("restarting swaync listener due to error: {:?}", e);
                     }
                 }),
             )
