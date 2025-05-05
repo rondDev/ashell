@@ -283,6 +283,7 @@ dependencies = [
  "log",
  "pipewire",
  "serde",
+ "serde_json",
  "sysinfo",
  "tokio",
  "toml",
